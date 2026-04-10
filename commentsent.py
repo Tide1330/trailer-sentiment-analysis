@@ -6,8 +6,9 @@ import ollama as ollama
 import re
 import time
 from youtube_comment_downloader import YoutubeCommentDownloader, SORT_BY_RECENT
-from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn
+from rich.progress import Progress   
 from rich import print
+import matplotlib.pyplot as plt
 
 def scrape(url, targetfile):
         downloader = YoutubeCommentDownloader()
@@ -34,7 +35,7 @@ def scrape(url, targetfile):
                         
         print(f"Scraping completed. Comments saved to {targetfile}.")             
         return targetfile
-scrape('https://www.youtube.com/watch?v=hh3JCjOHG_E&pp=ugUEEgJlbg%3D%3D', 'ytdownload.csv')
+scrape('https://www.youtube.com/watch?v=kJQP7kiw5Fk', 'ytdownload.csv')
 dataraw = pd.read_csv('ytdownload.csv', encoding='utf-8')
 mask = dataraw.apply(lambda row: len(''.join(row.fillna('').astype(str))), axis=1) > 2
 datacleaned = dataraw.to_numpy(dtype=object)
@@ -63,7 +64,10 @@ spef_movie = datacleaned
 indices = np.where(spef_movie)[0]
 indeces = indices.reshape(-1, 1)
 total_sentiment = 0
-
+negative_sentamitent = 0
+positive_sentiment = 0
+neutral_sentiment = 0
+labels = ['Negative', 'Neutral', 'Positive']
 for idx in indices:
     try:
         comment = str(datacleaned[idx, 1])
@@ -73,18 +77,24 @@ for idx in indices:
         total_sentiment += float(sentiment)
         if sentiment == '1':
             print(f"[bold green]Processed index {idx} | Sentiment: {sentiment}[/bold green]")
+            positive_sentiment += 1
         elif sentiment == '-1':
             print(f"[bold red]Processed index {idx} | Sentiment: {sentiment}[/bold red]")
+            negative_sentamitent += 1
         else:  
             print(f"[bold white]Processed index {idx} | Sentiment: {sentiment}[/bold white]")
+            neutral_sentiment += 1
         
     except Exception as e:
         print(f"Error processing index {idx}: {e}")
         datacleaned[idx, 1] = 0
         continue
-
 end_time = time.time()
+sizes = [negative_sentamitent, neutral_sentiment, positive_sentiment]
 average = total_sentiment / len(indices)
+plt.pie(sizes, labels=labels)
+plt.axis('equal')
+plt.show()
 
 print(f"---")
 print(f"Processing completed in {(end_time - start_time)/60:.2f} minutes")
