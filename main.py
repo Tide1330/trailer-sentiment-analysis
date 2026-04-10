@@ -11,18 +11,18 @@ count = 0
 def run():
     scrape(user_input, 'ytdownload.csv')
     dataraw = pd.read_csv('ytdownload.csv', encoding='utf-8')
-    #mask = dataraw.apply(lambda row: len(''.join(row.fillna('').astype(str))), axis=1) > 2
+    mask = dataraw.apply(lambda row: len(''.join(row.fillna('').astype(str))), axis=1) > 2
     datacleaned = dataraw.to_numpy(dtype=object)
+    datacleaned = datacleaned[mask]
     start_time = time.time()
-    spef_movie = datacleaned
-    indices = np.where(spef_movie)[0]
-    indeces = indices.reshape(-1, 1)
+    indices = np.where(datacleaned)[0]
+    indices = indices.reshape(-1, 1)
     total_sentiment = 0
     negative_sentamitent = 0
     positive_sentiment = 0
     neutral_sentiment = 0
     labels = ['Negative', 'Neutral', 'Positive']
-    #iterating over the indeces
+    #iterating over the indices
     for idx in indices:
         try:
             comment = str(datacleaned[idx, 1])

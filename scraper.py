@@ -4,6 +4,7 @@ from rich import print
 import csv
 import time
 
+#really simple scraper using rich to make it look pretty
 def scrape(url, targetfile):
     downloader = YoutubeCommentDownloader()
     comments = downloader.get_comments_from_url(url, sort_by=SORT_BY_RECENT)

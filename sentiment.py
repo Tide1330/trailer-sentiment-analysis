@@ -1,6 +1,7 @@
 import ollama as ollama
 import re
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+#might add multithreading in future update
 from concurrent.futures import ThreadPoolExecutor
 analyzer = SentimentIntensityAnalyzer()
 
